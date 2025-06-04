@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>스마트폰 사용 실태 설문조사</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;c&display=swap');
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background-color: #f0f4f8;
+      margin: 0;
+      padding: 0;
+    }
+
+    .header {
+      background-color: #34a853; 
+      padding: 2rem 0;
+      color: white;
+      text-align: center;
+      font-size: 1.8rem;
+      font-weight: bold;
+    }
+
+    .form-container {
+      max-width: 640px;
+      background-color: white;
+      margin: 2rem auto;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .form-group {
+      margin-bottom: 1.8rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.6rem;
+      font-weight: 600;
+      color: #202124;
+    }
+
+    input[type="text"],
+    select {
+      width: 100%;
+      padding: 0.8rem;
+      font-size: 1rem;
+      border: 1px solid #dadce0;
+      border-radius: 8px;
+      box-sizing: border-box;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    button {
+      background-color: #34a853;
+      color: white;
+      font-size: 1rem;
+      padding: 0.8rem 1.6rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #2c8c47;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    스마트폰 사용 실태 설문조사
+  </div>
+
+  <div class="form-container">
+    <form id="surveyForm">
+      <div class="form-group">
+        <label for="studentId">학번</label>
+        <input 
+        type="text" 
+        id="studentId" 
+        name="studentId" 
+        pattern="10(1[0-3][0-9]|2[0-3][0-9]|3[0-5])" 
+        placeholder="예) 10219" 
+        required title="학번을 입력해주세요." />
+        
+      </div>
+
+      <div class="form-group">
+        <label for="usageTime">하루 평균 스마트폰 사용 시간</label>
+        <select id="usageTime" name="usageTime" required>
+          <option value="">선택하세요</option>
+          <option value="1시간 미만">1시간 미만</option>
+          <option value="1~3시간">1~3시간</option>
+          <option value="3~5시간">3~5시간</option>
+          <option value="5시간 이상">5시간 이상</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="anxiety">스마트폰 사용 시 불안 증상이 있나요?</label>
+        <select id="anxiety" name="anxiety" required>
+          <option value="">선택하세요</option>
+          <option value="있다">있다</option>
+          <option value="없다">없다</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="daysCanHold">스마트폰 없이 며칠 동안 참을 수 있나요?</label>
+        <select id="daysCanHold" name="daysCanHold" required>
+          <option value="">선택하세요</option>
+          <option value="1일 미만">1일 미만</option>
+          <option value="1~2일">1~2일</option>
+          <option value="2~3일">2~3일</option>
+          <option value="3~4일">3~4일</option>
+          <option value="4~5일">4~5일</option>
+          <option value="5일 이상">5일 이상</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="symtoms">스마트폰 사용 시 느끼는 증상</label>
+        <select id="symtoms" name="symtoms" onchange="toggleOther()" required>
+          <option value="">선택하세요</option>
+          <option value="없음">없음</option>
+          <option value="거북목">거북목</option>
+          <option value="라운드 솔뎌">라운드 솔뎌</option>
+          <option value="불면">불면</option>
+          <option value="시력 저하">시력 저하</option>
+          <option value="기타">기타</option>
+        </select>
+        <input type="text" id="otherSymtoms" name="otherSymtoms" class="hidden" placeholder="기타 증상을 입력하세요" />
+      </div>
+
+      <button type="submit">제출하기</button>
+    </form>
+  </div>
+
+  <script>
+    function toggleOther() {
+      const select = document.getElementById('symtoms');
+      const otherInput = document.getElementById('otherSymtoms');
+      if (select.value === '기타') {
+        otherInput.classList.remove('hidden');
+        otherInput.required = true;
+      } else {
+        otherInput.classList.add('hidden');
+        otherInput.required = false;
+        otherInput.value = '';
+      }
+    }
+
+    document.getElementById('surveyForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const studentId = document.getElementById('studentId').value.trim();
+      const usageTime = document.getElementById('usageTime').value;
+      const anxiety = document.getElementById('anxiety').value;
+      const daysCanHold = document.getElementById('daysCanHold').value;
+      let symtoms = document.getElementById('symtoms').value;
+      const otherSymtoms = document.getElementById('otherSymtoms').value.trim();
+
+      if (symtoms === '기타' && otherSymtoms) {
+        symtoms = otherSymtoms;
+      }
+
+      const newResult = {
+        studentId,
+        usageTime,
+        anxiety,
+        daysCanHold,
+        symtoms
+      };
+
+      const prevResults = JSON.parse(localStorage.getItem('surveyResults') || '[]');
+
+      
+      const alreadyExists = prevResults.some(result => result.studentId === studentId);
+      if (alreadyExists) {
+        alert("이미 이 학번으로 제출한 기록이 있습니다.");
+        return; 
+      }
+
+      prevResults.push(newResult);
+      localStorage.setItem('surveyResults', JSON.stringify(prevResults));
+
+      alert('제출 완료');
+      this.reset();
+      toggleOther();
+    });
+  </script>
+
+</body>
+</html>
