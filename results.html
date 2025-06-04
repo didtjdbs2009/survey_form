@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>설문 결과</title>
+  <style>
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+    th, td {
+      border: 1px solid #aaa;
+      padding: 8px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <h1>설문 결과</h1>
+
+  <button onclick="resetResults()">초기화</button>
+
+  <div id="summary"></div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>학번</th>
+        <th>하루 사용 시간</th>
+        <th>불안 증상</th>
+        <th>참는 기간</th>
+        <th>증상</th>
+      </tr>
+    </thead>
+    <tbody id="resultsTableBody"></tbody>
+  </table>
+
+  <script>
+    const results = JSON.parse(localStorage.getItem('surveyResults') || '[]');
+    const tbody = document.getElementById('resultsTableBody');
+
+    if (results.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5">아직 제출된 결과가 없습니다.</td></tr>';
+    } else {
+      results.forEach(item => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${item.studentId}</td>
+          <td>${item.usageTime}</td>
+          <td>${item.anxiety}</td>
+          <td>${item.daysCanHold}</td>
+          <td>${item.symtoms}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    const summaryDiv = document.getElementById('summary');
+    if (results.length > 0) {
+      const usageCount = {};
+      const anxietyCount = {};
+      const holdCount = {};
+      const symtomsCount = {};
+
+      results.forEach(({ usageTime, anxiety, daysCanHold, symtoms }) => {
+        usageCount[usageTime] = (usageCount[usageTime] || 0) + 1;
+        anxietyCount[anxiety] = (anxietyCount[anxiety] || 0) + 1;
+        holdCount[daysCanHold] = (holdCount[daysCanHold] || 0) + 1;
+        symtomsCount[symtoms] = (symtomsCount[symtoms] || 0) + 1;
+      });
+
+      function makeList(title, obj) {
+        let html = `<h2>${title}</h2><ul>`;
+        for (const key in obj) {
+          html += `<li>${key}: ${obj[key]}명</li>`;
+        }
+        html += '</ul>';
+        return html;
+      }
+
+      summaryDiv.innerHTML =
+        makeList('하루 스마트폰 사용 시간별 인원', usageCount) +
+        makeList('불안 증상 여부별 인원', anxietyCount) +
+        makeList('스마트폰 사용 참는 기간별 인원', holdCount) +
+        makeList('증상별 인원', symtomsCount);
+    }
+
+    function resetResults() {
+      localStorage.removeItem('surveyResults');
+      location.reload();
+    }
+  </script>
+</body>
+</html>
